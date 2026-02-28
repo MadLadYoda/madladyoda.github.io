@@ -1,0 +1,10 @@
+title: Jack Net
+description: Cyber + Infra Notes
+
+remote_theme: cotes2020/jekyll-theme-chirpy
+
+plugins:
+  - jekyll-remote-theme
+
+lang: en
+timezone: Australia/Perth
