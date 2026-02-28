@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Build and Deploy Jekyll
 
 on:
   push:
@@ -10,19 +10,44 @@ permissions:
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          gem install jekyll bundler
+          bundle init
+          echo 'gem "jekyll"' >> Gemfile
+          echo 'gem "jekyll-remote-theme"' >> Gemfile
+          bundle install
+
+      - name: Build site
+        run: bundle exec jekyll build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v4
-      - uses: actions/jekyll-build-pages@v1
       - uses: actions/deploy-pages@v4
         id: deployment
