@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -24,12 +25,7 @@ jobs:
           bundler-cache: true
 
       - name: Install dependencies
-        run: |
-          gem install jekyll bundler
-          bundle init
-          echo 'gem "jekyll"' >> Gemfile
-          echo 'gem "jekyll-remote-theme"' >> Gemfile
-          bundle install
+        run: bundle install
 
       - name: Build site
         run: bundle exec jekyll build
@@ -48,6 +44,8 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
-      - uses: actions/deploy-pages@v4
+      - name: Deploy
+        uses: actions/deploy-pages@v4
         id: deployment
